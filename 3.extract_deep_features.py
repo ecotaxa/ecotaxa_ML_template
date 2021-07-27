@@ -17,17 +17,8 @@ import dataset   # custom data generator
 
 print('Set options') ## ----
 
-# set a memory limit on tensorflow, to allow others to use the GPU too
-gpus = tf.config.experimental.list_physical_devices('GPU')
-# # either allow memory to grow as needed (less efficient -- and seems broken)
-# tf.config.experimental.set_memory_growth(gpus[0], True)
-# or set a predefined memory limit
-tf.config.experimental.set_virtual_device_configuration(gpus[0],
-    [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=2300)])
-
 batch_size = 16  # size of images batches in GPU memory
 workers = 10     # number of parallel threads to prepare batches
-
 
 
 print('Load feature extractor and dimensionality reducer') ## ----
