@@ -2,3 +2,5 @@
 .ipynb_checkpoints
 __pycache__
 old
+data/*deep_features.csv
+out
