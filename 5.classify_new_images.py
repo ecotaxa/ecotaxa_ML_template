@@ -36,7 +36,7 @@ probs = RF.predict_proba(features)
 classes = RF.classes_
 
 # extract highest score and corresponding label
-predicted_scores  = np.max(probs, axis=1)
+predicted_scores = np.max(probs, axis=1)
 predicted_labels = np.array(classes)[np.argmax(probs, axis=1)]
 
 

@@ -4,11 +4,8 @@
 #
 # (c) 2021 Jean-Olivier Irisson, GNU General Public License v3
 
-import os
-# disable tensorflow messages
-os.environ['TF_CPP_MIN_LOG_LEVEL']='2' # does not work on the command line...
-# store models downloaded from TFHub in the user's home to avoid permission problems
-os.environ['TFHUB_CACHE_DIR'] = os.path.expanduser('~/.tfhub_modules/')
+import tensorflow_tricks  # settings for tensorflow to behave nicely
+
 import pickle
 
 import pandas as pd
