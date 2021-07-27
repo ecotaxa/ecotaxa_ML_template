@@ -17,7 +17,7 @@ from tensorflow.keras import utils
 class EcoTaxaGenerator(utils.Sequence):
     """
     Generates data batches
-        
+
     Args:
         images (list/ndarray, str): paths to images
         input_shape (tuple, int): dimensions of the input images for the network
@@ -41,19 +41,19 @@ class EcoTaxaGenerator(utils.Sequence):
                  shuffle=False, augment=False, upscale=True):
         'Initialization of settings'
         # initialize constants
-        self.images_paths = images_paths 
+        self.images_paths = images_paths
         self.labels       = labels
         self.input_shape  = input_shape
         self.batch_size   = batch_size
         self.shuffle      = shuffle
         self.augment      = augment
         self.upscale      = upscale
-        
+
         if (labels is not None):
             # initialise the one-hot encoder
             mlb = MultiLabelBinarizer(classes=classes)
             self.class_encoder = mlb
-        
+
         # print('Nb of images : ' + str(len(self.images_paths)))
         # print('Nb of labels : ' + str(len(self.labels)))
         # print('Input shape : ' + str(self.input_shape))
@@ -61,7 +61,7 @@ class EcoTaxaGenerator(utils.Sequence):
         # print('Shuffle inputs : ' + str(self.shuffle))
         # print('Augment inputs : ' + str(self.augment))
         # print('Upscale small images : ' + str(self.upscale))
-        
+
         self.on_epoch_end()
 
     def __len__(self):
@@ -78,25 +78,25 @@ class EcoTaxaGenerator(utils.Sequence):
         # are not always the same
         if self.shuffle:
             np.random.shuffle(self.indexes)
-            
+
     def padding_value(self, img):
         'Compute value to use to pad an image, as the median value of border pixels'
         # get height and width of image
         h,w = img.shape[0:2]
-        
+
         # concatenate border pixels in an array
         borders = np.concatenate((
             img[:, 0],         # left column
             img[:, w-1],       # right column
             img[0, 1:w-2],     # top line without corners
-            img[h-1, 1:w-2],   # bottom line without corners        
+            img[h-1, 1:w-2],   # bottom line without corners
         ), axis=0)
-        
+
         # compute the median
         pad_value = np.median(borders)
-        
+
         return pad_value
-    
+
     def augmenter(self, images):
         """
         Define a data augmenter which does horizontalf flip (50% chance),
@@ -120,14 +120,14 @@ class EcoTaxaGenerator(utils.Sequence):
 
     def __getitem__(self, index):
         'Generate one batch of data'
-                
+
         # pick indexes of images for this batch
         indexes = self.indexes[index*self.batch_size:(index+1)*self.batch_size]
 
         # select and load images from this batch
         batch_paths = [self.images_paths[i] for i in indexes]
         batch_orig_images = [lycon.load(p)/255 for p in batch_paths]
-        
+
         # resize images to the input dimension of the network
         batch_prepared_images = []
         input_size = self.input_shape[0] # NB: assumes square input
@@ -139,42 +139,42 @@ class EcoTaxaGenerator(utils.Sequence):
             # h = img.shape[0]
 
             h,w = img.shape[0:2]
-            
+
             # compute largest dimension (hor or ver)
             dim_max = max(h,w)
-            
+
             # upscale small images or downscale large ones
             if (self.upscale) or (dim_max > input_size):
                 # resize image so that largest dim is now equal to input_size
                 img = lycon.resize(
-                    img, 
-                    height = max(h*input_size//dim_max,1), 
-                    width  = max(w*input_size//dim_max,1), 
+                    img,
+                    height = max(h*input_size//dim_max,1),
+                    width  = max(w*input_size//dim_max,1),
                     interpolation=lycon.Interpolation.AREA
                 )
                 h,w = img.shape[0:2]
-            
+
             # TODO review the following for speed, possibly
-            
+
             # create a square, empty output, of desired dimension, filled with padding value
             pad_value = self.padding_value(img)
             img_square = np.full(self.input_shape, pad_value)
-            
-            # compute number of pixels to leave blank 
+
+            # compute number of pixels to leave blank
             offset_ver = int((input_size-h)/2) # on top and bottom of image
             offset_hor = int((input_size-w)/2) # on left and right of image
-            
+
             # replace pixels by input image
             img_square[offset_ver:offset_ver+h, offset_hor:offset_hor+w] = img
             batch_prepared_images.append(img_square)
-        
-        # convert to array of images        
+
+        # convert to array of images
         batch_prepared_images = np.array([img for img in batch_prepared_images], dtype='float32')
-        
+
         # augment images
         if self.augment == True:
             batch_prepared_images = self.augmenter(batch_prepared_images)
-            
+
         # extract the labels corresponding to the selected indexes, when they are provided
         if self.labels is not None:
             batch_labels = [self.labels[i] for i in indexes]

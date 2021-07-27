@@ -36,19 +36,19 @@ upscale = True
 
 # CNN structure (see cnn.Create and cnn.Compile)
 fe_url = 'https://tfhub.dev/google/imagenet/mobilenet_v2_140_224/feature_vector/4'
-input_shape = (224, 224, 3)  
-fe_trainable = True          
+input_shape = (224, 224, 3)
+fe_trainable = True
 # fc_layers_sizes = [1792, 896]
 fc_layers_sizes = [600]
-fc_layers_dropout = 0.4      
-classif_layer_dropout = 0.2  
+fc_layers_dropout = 0.4
+classif_layer_dropout = 0.2
 
 # CNN training (see cnn.Train)
 use_class_weight = True
-lr_method = 'decay' 
-initial_lr = 0.0005 
-decay_rate = 0.97   
-loss = 'cce'        
+lr_method = 'decay'
+initial_lr = 0.0005
+decay_rate = 0.97
+loss = 'cce'
 epochs = 2
 workers = 10
 
@@ -89,20 +89,20 @@ nb_of_classes = len(classes)
 train_batches = dataset.EcoTaxaGenerator(
     images_paths=df_train['img_path'].values,
     input_shape=input_shape,
-    labels=df_train['label'].values, classes=classes, 
+    labels=df_train['label'].values, classes=classes,
     batch_size=batch_size, augment=augment, shuffle=True)
 
 val_batches = dataset.EcoTaxaGenerator(
     images_paths=df_val['img_path'].values,
     input_shape=input_shape,
-    labels=df_val['label'].values, classes=classes, 
+    labels=df_val['label'].values, classes=classes,
     batch_size=batch_size, augment=False, shuffle=False)
 # NB: do not suffle or augment data for validation, it is useless
 
 total_batches = dataset.EcoTaxaGenerator(
     images_paths=df['img_path'].values,
     input_shape=input_shape,
-    labels=None, classes=None, 
+    labels=None, classes=None,
     batch_size=batch_size, augment=False, shuffle=False)
 
 
@@ -124,21 +124,21 @@ else :
         input_shape=input_shape,
         fe_trainable=fe_trainable,
         # fully connected layer(s)
-        fc_layers_sizes=fc_layers_sizes, 
-        fc_layers_dropout=fc_layers_dropout, 
+        fc_layers_sizes=fc_layers_sizes,
+        fc_layers_dropout=fc_layers_dropout,
         # classification layer
-        classif_layer_size=nb_of_classes, 
+        classif_layer_size=nb_of_classes,
         classif_layer_dropout=classif_layer_dropout
     )
-    
+
     print('  compile model')
     # compile CNN
     my_cnn = cnn.Compile(
-        my_cnn, 
-        initial_lr=initial_lr, 
-        lr_method=lr_method, 
+        my_cnn,
+        initial_lr=initial_lr,
+        lr_method=lr_method,
         decay_steps=len(train_batches),
-        decay_rate=decay_rate, 
+        decay_rate=decay_rate,
         loss=loss
     )
 

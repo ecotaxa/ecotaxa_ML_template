@@ -52,7 +52,7 @@ for source in ['training', 'unknown']:
     full_features = my_fe.predict(batches, max_queue_size=max(10, workers*2), workers=workers)
     # and reduce their dimension
     reduced_features = pca.transform(full_features)
-    
+
     # save them to disk
     reduced_features_df = pd.DataFrame(reduced_features, index=df.index)
     reduced_features_df.to_csv('data/'+source+'_deep_features.csv')

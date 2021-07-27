@@ -1,6 +1,6 @@
 #
 # Some settings to force TensorFlow to behave nicely
-# 
+#
 # (c) 2021 Jean-Olivier Irisson, GNU General Public License v3
 
 

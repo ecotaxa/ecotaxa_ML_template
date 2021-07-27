@@ -42,7 +42,7 @@ df = pd.read_csv('data/training_labels.csv', index_col='id')
 batches = dataset.EcoTaxaGenerator(
     images_paths=df.img_path.values,
     input_shape=input_shape,
-    labels=None, classes=None, 
+    labels=None, classes=None,
     batch_size=batch_size, augment=False, shuffle=False)
 
 # extract features by going through the batches
