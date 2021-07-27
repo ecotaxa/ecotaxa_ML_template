@@ -49,7 +49,7 @@ lr_method = 'decay'
 initial_lr = 0.0005 
 decay_rate = 0.97   
 loss = 'cce'        
-epochs = 3
+epochs = 2
 workers = 10
 
 print('Prepare datasets') ## ----
@@ -175,6 +175,18 @@ metrics.accuracy_score(y_true=df.label, y_pred=df.predicted_label)
 metrics.confusion_matrix(y_true=df.label, y_pred=df.predicted_label)
 
 
-print('Save final model') ## ----
+print('Create feature extractor') ## ----
 
+# save model
 my_cnn.save(os.path.join(output_dir, 'best_model'))
+
+# drop the Dense and Dropout layers to get only the feature extractor
+my_fe = tf.keras.models.Sequential(
+    [layer for layer in my_cnn.layers
+     if not (isinstance(layer, tf.keras.layers.Dense) |
+             isinstance(layer, tf.keras.layers.Dropout))
+    ])
+my_fe.summary()
+
+# save feature extractor
+my_fe.save('out/feature_extractor')
