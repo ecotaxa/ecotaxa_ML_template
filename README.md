@@ -4,20 +4,20 @@ The goal of this repository is to provide a functional example of the ML pipelin
 
 ## Vocabulary
 
-class = EcoTaxa category
-label = name of an EcoTaxa category
+class = EcoTaxa category.  
+label = name of an EcoTaxa category.  
 
-training/fitting a model = tuning a model to adapt itself to the example data it is provided with
-evaluating/predicting = using a trained model on a new set of data (to predict a class for each object, to compute features from it)
+training/fitting a model = tuning a model to adapt itself to the example data it is provided with.  
+evaluating/predicting = using a trained model on a new set of data (to predict a class for each object, to compute features from it).  
 
-learning/training set = set of objects with a label assigned (i.e. validated in EcoTaxa)
-validation set = separate set of objects, also labelled, used to check the performance of a model while training
-test set = separate set of objects, also labelled, used to compute the final performance of a model after training
-unlabelled set = set of objects with no labels, to be predicted
+learning/training set = set of objects with a label assigned (i.e. validated in EcoTaxa).  
+validation set = separate set of objects, also labelled, used to check the performance of a model while training. 
+test set = separate set of objects, also labelled, used to compute the final performance of a model after training.  
+unlabelled set = set of objects with no labels, to be predicted.  
 
-object features = numeric values that describe the object on the image: size, darkness, etc.
-handcrafted features = features that are extracted by a deterministic algorithm (before the upload in EcoTaxa)
-deep features = features that are extracted by a deep, convolutional neural network
+object features = numeric values that describe the object on the image: size, darkness, etc.  
+handcrafted features = features that are extracted by a deterministic algorithm (before the upload in EcoTaxa).  
+deep features = features that are extracted by a deep, convolutional neural network.  
 
 
 ## General process
@@ -80,6 +80,8 @@ The process is:
 - load the dimensionality reducer
 - feed the features to the dimensionality reducer
 - store the resulting, reduced and ordered features
+
+The feature extractor + dimensionality reducer are a "network" (currently called SCN network). The old ones are not compatible anymore. We will produce new ones based on the work of Thelma.
 
 
 ## Step 4: Train classifier
