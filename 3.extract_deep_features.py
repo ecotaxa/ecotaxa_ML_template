@@ -19,7 +19,8 @@ print('Set options') ## ----
 
 batch_size = 16  # size of images batches in GPU memory
 workers = 10     # number of parallel threads to prepare batches
-
+with open('io/crop.txt') as f:
+    bottom_crop = int(f.read())
 
 print('Load feature extractor and dimensionality reducer') ## ----
 
@@ -46,7 +47,8 @@ for source in ['training', 'unknown']:
         input_shape=input_shape,
         labels=None, classes=None,
         # NB: we don't need the labels here, we just run images through the network
-        batch_size=batch_size, augment=False, shuffle=False)
+        batch_size=batch_size, augment=False, shuffle=False,
+        crop=[0,0,bottom_crop,0])
 
     # extract features by going through the batches
     full_features = my_fe.predict(batches, max_queue_size=max(10, workers*2), workers=workers)

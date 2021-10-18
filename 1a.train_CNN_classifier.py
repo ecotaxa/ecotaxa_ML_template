@@ -33,6 +33,8 @@ os.makedirs(ckpt_dir, exist_ok=True)
 batch_size = 16
 augment = True
 upscale = True
+with open('io/crop.txt') as f:
+    bottom_crop = int(f.read())
 
 # CNN structure (see cnn.Create and cnn.Compile)
 fe_url = 'https://tfhub.dev/google/imagenet/mobilenet_v2_140_224/feature_vector/4'
@@ -52,6 +54,7 @@ loss = 'cce'
 epochs = 2
 workers = 10
 
+
 print('Prepare datasets') ## ----
 
 # read DataFrame with image ids, paths and labels
@@ -61,7 +64,7 @@ df = pd.read_csv('data/training_labels.csv', index_col='id')
 # extract a validation set to monitor performance while training
 seed = 1
 # 75% in train
-df_train = df.groupby('label').sample(frac=0.75, random_state=seed)
+df_train = df.groupby('label').sample(frac=0.9, random_state=seed)
 # the remaining 15% in val
 df_val   = df.loc[set(df.index) - set(df_train.index)]
 
@@ -90,20 +93,23 @@ train_batches = dataset.EcoTaxaGenerator(
     images_paths=df_train['img_path'].values,
     input_shape=input_shape,
     labels=df_train['label'].values, classes=classes,
-    batch_size=batch_size, augment=augment, shuffle=True)
+    batch_size=batch_size, augment=augment, shuffle=True,
+    crop=[0,0,bottom_crop,0])
 
 val_batches = dataset.EcoTaxaGenerator(
     images_paths=df_val['img_path'].values,
     input_shape=input_shape,
     labels=df_val['label'].values, classes=classes,
-    batch_size=batch_size, augment=False, shuffle=False)
+    batch_size=batch_size, augment=False, shuffle=False,
+    crop=[0,0,bottom_crop,0])
 # NB: do not suffle or augment data for validation, it is useless
 
 total_batches = dataset.EcoTaxaGenerator(
     images_paths=df['img_path'].values,
     input_shape=input_shape,
     labels=None, classes=None,
-    batch_size=batch_size, augment=False, shuffle=False)
+    batch_size=batch_size, augment=False, shuffle=False,
+    crop=[0,0,bottom_crop,0])
 
 
 print('Prepare model') ## ----

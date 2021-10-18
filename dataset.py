@@ -32,13 +32,14 @@ class EcoTaxaGenerator(utils.Sequence):
             usually True for training, False otherwise
         upscale (bool) : whether to scale small images up to the input shape
             if False, small images are just padded
+        crop (tuple, int) : number of pixels to crop from the top,right,bottom,left.
 
     Returns:
         A batch of `batch_size` images (4D ndarray) and one-hot encoded labels (2D ndarray)
 
     """
     def __init__(self, images_paths, input_shape, labels=None, classes=None, batch_size=32,
-                 shuffle=False, augment=False, upscale=True):
+                 shuffle=False, augment=False, upscale=True, crop=(0,0,0,0)):
         'Initialization of settings'
         # initialize constants
         self.images_paths = images_paths
@@ -48,6 +49,7 @@ class EcoTaxaGenerator(utils.Sequence):
         self.shuffle      = shuffle
         self.augment      = augment
         self.upscale      = upscale
+        self.crop         = crop
 
         if (labels is not None):
             # initialise the one-hot encoder
@@ -132,11 +134,11 @@ class EcoTaxaGenerator(utils.Sequence):
         batch_prepared_images = []
         input_size = self.input_shape[0] # NB: assumes square input
         for img in batch_orig_images:
-# TODO crop scale bar
-# TODO crop to object
-            # # delete scale bar of px_del px at bottom of image
-            # img = img[0:h-self.px_del,:]
-            # h = img.shape[0]
+            # crop a defined number of pixels from the sides
+            [t,r,b,l] = self.crop
+            h,w = img.shape[0:2]
+            img = img[t:(h-b),l:(w-r),:]
+# TODO crop to object, automatically
 
             h,w = img.shape[0:2]
 

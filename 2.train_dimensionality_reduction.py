@@ -20,7 +20,8 @@ print('Set options') ## ----
 batch_size = 16  # size of images batches in GPU memory
 workers = 10     # number of parallel threads to prepare batches
 n_dims = 50      # number of dimensions to keep after dimensionality reduction
-
+with open('io/crop.txt') as f:  # number of pixels to crop at the bottom
+    bottom_crop = int(f.read())
 
 print('Load feature extractor') ## ----
 
@@ -43,7 +44,8 @@ batches = dataset.EcoTaxaGenerator(
     images_paths=df.img_path.values,
     input_shape=input_shape,
     labels=None, classes=None,
-    batch_size=batch_size, augment=False, shuffle=False)
+    batch_size=batch_size, augment=False, shuffle=False,
+    crop=[0,0,bottom_crop,0])
 
 # extract features by going through the batches
 features = my_fe.predict(batches, max_queue_size=max(10, workers*2), workers=workers)
