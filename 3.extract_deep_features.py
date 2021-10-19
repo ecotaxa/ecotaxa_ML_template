@@ -24,13 +24,13 @@ with open('io/crop.txt') as f:
 
 print('Load feature extractor and dimensionality reducer') ## ----
 
-my_fe = tf.keras.models.load_model('out/feature_extractor')
+my_fe = tf.keras.models.load_model('io/feature_extractor')
 # get model input shape
 input_shape = my_fe.layers[0].input_shape
 # remove the None element at the start (which is where the batch size goes)
 input_shape = tuple(x for x in input_shape if x is not None)
 
-with open('out/dim_reducer.pickle','rb') as pca_file:
+with open('io/dim_reducer.pickle','rb') as pca_file:
     pca = pickle.load(pca_file)
 
 
@@ -39,7 +39,7 @@ print('Load data and extract features') ## ----
 for source in ['training', 'unknown']:
     # read DataFrame with image ids, paths and labels
     # NB: those would be in the database in EcoTaxa
-    df = pd.read_csv('data/'+source+'_labels.csv', index_col='id')
+    df = pd.read_csv('io/'+source+'_labels.csv', index_col='id')
 
     # prepare data batches
     batches = dataset.EcoTaxaGenerator(
@@ -57,4 +57,4 @@ for source in ['training', 'unknown']:
 
     # save them to disk
     reduced_features_df = pd.DataFrame(reduced_features, index=df.index)
-    reduced_features_df.to_csv('data/'+source+'_deep_features.csv')
+    reduced_features_df.to_csv('io/'+source+'_deep_features.csv.gz', compression="gzip")

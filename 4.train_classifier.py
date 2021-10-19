@@ -20,9 +20,9 @@ n_jobs = 10               # number of parallel threads
 
 print('Read training labels and features') ## ----
 
-labels    = pd.read_csv('data/training_labels.csv', index_col='id')
-hand_feat = pd.read_csv('data/training_features.csv', index_col='id')
-deep_feat = pd.read_csv('data/training_deep_features.csv', index_col='id')
+labels    = pd.read_csv('io/training_labels.csv', index_col='id')
+hand_feat = pd.read_csv('io/training_features.csv.gz', index_col='id')
+deep_feat = pd.read_csv('io/training_deep_features.csv.gz', index_col='id')
 
 # combine handcrafted and deep features
 features = hand_feat.join(deep_feat)
@@ -37,7 +37,7 @@ RF = RandomForestClassifier(n_estimators=n_estimators,
 RF.fit(X=features, y=labels.label.values)
 
 # save it to disk for the next step
-with open('out/classifer.pickle','wb') as rf_file:
+with open('io/classifer.pickle','wb') as rf_file:
     pickle.dump(RF, rf_file)
 # NB: In EcoTaxa, this used to be possible but resulted in very large models, which were nearly unusable.
 #     So this feature is removed for now and the prediction (step 5) is done right after the fitting of the model.

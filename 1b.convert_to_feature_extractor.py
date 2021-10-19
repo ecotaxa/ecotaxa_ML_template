@@ -9,11 +9,15 @@ import tensorflow_tricks  # settings for tensorflow to behave nicely
 
 import os
 import tensorflow as tf
+import tensorflow_hub as hub
 
 import cnn                # custom functions for CNN generation
 
 # read model weights
-my_cnn = tf.keras.models.load_model('out/best_model')
+my_cnn = tf.keras.models.load_model('io/cnn_model.hdf5',
+                                    custom_objects={'KerasLayer':hub.KerasLayer})
+# NB: the addition of custom_objects is a workaround for a bug in tensorflow_hub.
+#     This problem does not appear with the native saving format of TF instead of .hdf5
 
 # drop the Dense and Dropout layers to get only the feature extractor
 my_fe = tf.keras.models.Sequential(
@@ -24,6 +28,4 @@ my_fe = tf.keras.models.Sequential(
 my_fe.summary()
 
 # save feature extractor
-my_fe.save('out/feature_extractor')
-# or the following, for a single file archive
-my_fe.save('out/feature_extractor.hdf5')
+my_fe.save('io/feature_extractor')

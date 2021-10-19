@@ -22,11 +22,8 @@ import cnn                # custom functions for CNN generation
 print('Set options') ## ----
 
 # I/O
-img_dir = 'data/images/' # directory containing images
-output_dir = 'out'       # directory to save models
-ckpt_dir = os.path.join(output_dir, 'checkpoints')
-                         # directory to save training checkpoints
-os.makedirs(output_dir, exist_ok=True)
+# directory to save training checkpoints
+ckpt_dir = 'io/checkpoints'
 os.makedirs(ckpt_dir, exist_ok=True)
 
 # Data generator (see dataset.EcoTaxaGenerator)
@@ -59,7 +56,7 @@ print('Prepare datasets') ## ----
 
 # read DataFrame with image ids, paths and labels
 # NB: those would be in the database in EcoTaxa
-df = pd.read_csv('data/training_labels.csv', index_col='id')
+df = pd.read_csv('io/training_labels.csv', index_col='id')
 
 # extract a validation set to monitor performance while training
 seed = 1
@@ -184,4 +181,4 @@ metrics.confusion_matrix(y_true=df.label, y_pred=df.predicted_label)
 print('Save model') ## ----
 
 # save model
-my_cnn.save(os.path.join(output_dir, 'best_model'))
+my_cnn.save('io/cnn_model.hdf5')

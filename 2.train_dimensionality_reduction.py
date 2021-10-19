@@ -10,6 +10,7 @@ import pickle
 
 import pandas as pd
 import tensorflow as tf
+import tensorflow_hub as hub
 from sklearn.decomposition import PCA
 
 import dataset   # custom data generator
@@ -25,7 +26,7 @@ with open('io/crop.txt') as f:  # number of pixels to crop at the bottom
 
 print('Load feature extractor') ## ----
 
-my_fe = tf.keras.models.load_model('out/feature_extractor')
+my_fe = tf.keras.models.load_model('io/feature_extractor')
 
 # get model input shape
 input_shape = my_fe.layers[0].input_shape
@@ -37,7 +38,7 @@ print('Load data and extract features for the training set') ## ----
 
 # read DataFrame with image ids, paths and labels
 # NB: those would be in the database in EcoTaxa
-df = pd.read_csv('data/training_labels.csv', index_col='id')
+df = pd.read_csv('io/training_labels.csv', index_col='id')
 
 # prepare data batches
 batches = dataset.EcoTaxaGenerator(
@@ -59,5 +60,5 @@ pca = PCA(n_components=n_dims)
 pca.fit(features)
 
 # save it for later application
-with open('out/dim_reducer.pickle', 'wb') as pca_file:
+with open('io/dim_reducer.pickle', 'wb') as pca_file:
     pickle.dump(pca, pca_file)

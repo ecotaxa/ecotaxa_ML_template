@@ -17,8 +17,8 @@ print('Set options') ## ----
 
 print('Read unknown images features') ## ----
 
-hand_feat = pd.read_csv('data/unknown_features.csv', index_col='id')
-deep_feat = pd.read_csv('data/unknown_deep_features.csv', index_col='id')
+hand_feat = pd.read_csv('io/unknown_features.csv.gz', index_col='id')
+deep_feat = pd.read_csv('io/unknown_deep_features.csv.gz', index_col='id')
 
 features = hand_feat.join(deep_feat)
 # in EcoTaxa, this would be extracted from the database
@@ -26,7 +26,7 @@ features = hand_feat.join(deep_feat)
 
 print('Load and apply classifier') ## -----
 
-with open('out/classifer.pickle','rb') as rf_file:
+with open('io/classifer.pickle','rb') as rf_file:
     RF = pickle.load(rf_file)
 # in EcoTaxa, this is not necessary since the model will not be saved
 
@@ -41,7 +41,7 @@ predicted_labels = np.array(classes)[np.argmax(probs, axis=1)]
 
 
 # compare with reality, just for fun
-df = pd.read_csv('data/unknown_labels.csv', index_col='id')
+df = pd.read_csv('io/unknown_labels.csv', index_col='id')
 
 from sklearn import metrics
 metrics.accuracy_score(y_true=df.label, y_pred=predicted_labels)
