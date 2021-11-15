@@ -181,4 +181,4 @@ metrics.confusion_matrix(y_true=df.label, y_pred=df.predicted_label)
 print('Save model') ## ----
 
 # save model
-my_cnn.save('io/cnn_model.hdf5')
+my_cnn.save('io/cnn_model')

@@ -14,10 +14,7 @@ import tensorflow_hub as hub
 import cnn                # custom functions for CNN generation
 
 # read model weights
-my_cnn = tf.keras.models.load_model('io/cnn_model.hdf5',
-                                    custom_objects={'KerasLayer':hub.KerasLayer})
-# NB: the addition of custom_objects is a workaround for a bug in tensorflow_hub.
-#     This problem does not appear with the native saving format of TF instead of .hdf5
+my_cnn = tf.keras.models.load_model('io/cnn_model')
 
 # drop the Dense and Dropout layers to get only the feature extractor
 my_fe = tf.keras.models.Sequential(
