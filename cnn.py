@@ -187,8 +187,8 @@ def Train(
         the traning and validation dataset.
     """
 
-    # Set callbacks to save model weights when validation loss improves
-    checkpoint_path = os.path.join(output_dir, "checkpoint.{epoch:03d}.ckpt")
+    # Set callback to save model weights along training
+    checkpoint_path = os.path.join(output_dir, 'checkpoint.{epoch:03d}.ckpt')
     # NB: hdf5 does not work for saving full models
     checkpoint_callback = callbacks.ModelCheckpoint(
         filepath=checkpoint_path,
