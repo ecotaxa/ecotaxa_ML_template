@@ -140,8 +140,10 @@ def Load(output_dir='.'):
             to start re-training at
     """
     # list existing model training checkpoints
-    checkpoints = os.listdir(output_dir)
-    # TODO check difference with tf.saved_model.load()
+    try:
+        checkpoints = os.listdir(output_dir)
+    except:
+        checkpoints = []
 
     if len(checkpoints) > 0 :
         checkpoints.sort(reverse=True)
@@ -149,6 +151,7 @@ def Load(output_dir='.'):
 
         # load the model
         model = tf.keras.models.load_model(latest_checkpoint)
+        # TODO check difference with tf.saved_model.load()
         model.summary()
 
         # get epoch from file name
