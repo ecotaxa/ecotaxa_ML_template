@@ -153,8 +153,8 @@ def Load(output_dir='.'):
         latest_checkpoint = os.path.join(output_dir, checkpoints[0])
 
         # load the model
-        model = tf.keras.models.load_model(latest_checkpoint)
-        # TODO check difference with tf.saved_model.load()
+        model = tf.keras.models.load_model(latest_checkpoint,
+                    custom_objects={'KerasLayer':hub.KerasLayer})
         model.summary()
 
         # get epoch from file name
@@ -188,8 +188,8 @@ def Train(
     """
 
     # Set callback to save model weights along training
-    checkpoint_path = os.path.join(output_dir, 'checkpoint.{epoch:03d}.ckpt')
-    # NB: hdf5 does not work for saving full models
+    checkpoint_path = os.path.join(output_dir, 'checkpoint.{epoch:03d}.h5')
+    # NB: hdf5 is necessary to save the model *and* the optimizer state
     checkpoint_callback = callbacks.ModelCheckpoint(
         filepath=checkpoint_path,
         monitor='val_loss',

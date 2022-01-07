@@ -158,7 +158,6 @@ history = cnn.Train(
     output_dir=ckpt_dir,
     workers=workers
 )
-# TODO check learning rate for restarts
 
 
 print('Evaluate model') ## ----
@@ -180,4 +179,6 @@ metrics.confusion_matrix(y_true=df.label, y_pred=df.predicted_label)
 print('Save model') ## ----
 
 # save model
-my_cnn.save('io/cnn_model')
+my_cnn.save('io/cnn_model', include_optimizer=False)
+# NB: do not include the optimizer state: (i) we don't need to retrain this final
+#     model, (ii) it does not work with the native TF format anyhow.
