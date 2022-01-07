@@ -146,7 +146,10 @@ def Load(output_dir='.'):
         checkpoints = []
 
     if len(checkpoints) > 0 :
+        # the first element is the tranining log file, which we remove
         checkpoints.sort(reverse=True)
+        removed_element = checkpoints.pop(0)
+        # to get the lastest checkpoint path
         latest_checkpoint = os.path.join(output_dir, checkpoints[0])
 
         # load the model
@@ -196,12 +199,30 @@ def Train(
         save_freq='epoch',
         verbose=1
     )
-
+    
+    # Set callback to save the learning rate value
+    class LearningRateLogger(callbacks.Callback):
+        def __init__(self):
+            super().__init__()
+            self._supports_tf_logs = True
+            
+        # get learning rate value at the end of each epoch
+        # (with the rest of the stats)
+        def on_epoch_end(self, epoch, logs=None):
+          if logs is None or 'learning_rate' in logs:
+            return
+          logs['learning_rate'] = float(self.model.optimizer.lr)
+    
+    # Set callback to log the stats to a .tsv file
+    tsv_path = os.path.join(output_dir, 'training_log.tsv')
+    tsv_logger = callbacks.CSVLogger(filename=tsv_path, separator='\t',
+                                     append=os.path.isfile(tsv_path))
+    
     # Fit the model
     history = model.fit(
         x=train_batches,
         epochs=epochs,
-        callbacks=[checkpoint_callback],
+        callbacks=[checkpoint_callback, LearningRateLogger(), tsv_logger],
         initial_epoch=initial_epoch,
         validation_data=valid_batches,
         class_weight=class_weight,

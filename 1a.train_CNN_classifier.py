@@ -158,7 +158,6 @@ history = cnn.Train(
     output_dir=ckpt_dir,
     workers=workers
 )
-# TODO deal with history for restarts
 # TODO check learning rate for restarts
 
 
