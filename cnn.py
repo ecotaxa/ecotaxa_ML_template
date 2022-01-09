@@ -216,19 +216,19 @@ def Train(
         # get learning rate value at the end of each epoch
         # (with the rest of the stats)
         def on_epoch_end(self, epoch, logs=None):
-          if logs is None or 'learning_rate' in logs:
-            return
-          # get the optimizer
-          optim = self.model.optimizer
-          # get the current value of the learning rate
-          # - either as a variable (when it is fixed)
-          # - or computed from the current number of iterations
-          if isinstance(optim.lr, tf.Variable):
-            lr_value = optim.lr.numpy()
-          else:
-            lr_value = optim.lr(optim.iterations).numpy()
-          logs['learning_rate'] = lr_value
-    
+            if logs is None or 'learning_rate' in logs:
+                return
+            # get the optimizer
+            optim = self.model.optimizer
+            # get the current value of the learning rate
+            # - either as a variable (when it is fixed)
+            # - or computed from the current number of iterations
+            if isinstance(optim.lr, tf.Variable):
+                lr_value = optim.lr.numpy()
+            else:
+                lr_value = optim.lr(optim.iterations).numpy()
+            logs['learning_rate'] = lr_value
+
     # Set callback to log the stats to a .tsv file
     tsv_path = os.path.join(output_dir, 'training_log.tsv')
     tsv_logger = callbacks.CSVLogger(filename=tsv_path, separator='\t',
