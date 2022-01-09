@@ -127,17 +127,17 @@ def Compile(
     return model
 
 
-def Load(output_dir='.'):
+def Load(output_dir='.', epoch=None):
     """
     Load a CNN model.
 
     Args:
         output_dir (str): path to the directory where the model has been saved
+        epoch (int): the epoch to load; when None, loads the latest epoch
 
     Returns:
         model (tf.keras.Sequential): CNN model
-        epoch (int): latest training epoch for the loaded model,
-            to start re-training at
+        epoch (int): number of the loaded training epoch
     """
     # list existing model training checkpoints
     try:
@@ -145,21 +145,28 @@ def Load(output_dir='.'):
     except:
         checkpoints = []
 
-    if len(checkpoints) > 0 :
-        # the first element is the tranining log file, which we remove
-        checkpoints.sort(reverse=True)
-        removed_element = checkpoints.pop(0)
-        # to get the lastest checkpoint path
-        latest_checkpoint = os.path.join(output_dir, checkpoints[0])
-
+    if len(checkpoints) > 1 :
+        # NB: the first element is the tranining log file
+        #     we need at lease one more element than this one
+        if epoch is None:
+            # remove the training log
+            checkpoints.sort(reverse=True)
+            removed_element = checkpoints.pop(0)
+            # get the lastest checkpoint path
+            checkpoint_to_load = os.path.join(output_dir, checkpoints[0])
+            # get epoch from file name
+            epoch = int(checkpoint_to_load.split('.')[1])
+            # TODO: check if there is a more robust way to get this from the model
+        else:
+            checkpoint_to_load = os.path.join(output_dir, 'checkpoint.{:03d}.h5'.format(epoch))
+            if not os.path.isfile(checkpoint_to_load):
+                raise FileNotFoundError(1, checkpoint_to_load)
+                
         # load the model
-        model = tf.keras.models.load_model(latest_checkpoint,
+        model = tf.keras.models.load_model(checkpoint_to_load,
                     custom_objects={'KerasLayer':hub.KerasLayer})
         model.summary()
 
-        # get epoch from file name
-        epoch = int(latest_checkpoint.split('.')[1])
-        # TODO: check if there is a more robust way to get this from the model
     else :
         model = None
         epoch = 0
