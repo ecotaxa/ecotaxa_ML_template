@@ -173,9 +173,9 @@ pred = cnn.Predict(
 
 # comput a few scores, just for fun
 df['predicted_label'] = pred
-metrics.accuracy_score(y_true=df.label, y_pred=df.predicted_label)
-metrics.confusion_matrix(y_true=df.label, y_pred=df.predicted_label)
-
+df.to_csv('io/predictions.csv')
+# metrics.confusion_matrix(y_true=df.label, y_pred=df.predicted_label)
+print(metrics.classification_report(y_true=df.label, y_pred=df.predicted_label))
 
 print('Save model') ## ----
 
