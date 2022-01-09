@@ -44,6 +44,7 @@ classif_layer_dropout = 0.2
 
 # CNN training (see cnn.Train)
 use_class_weight = True
+weight_sensitivity = 0.25  # 0.5 = sqrt
 lr_method = 'decay'
 initial_lr = 0.0005
 decay_rate = 0.97
@@ -78,7 +79,7 @@ if use_class_weight:
     max_count = np.max(class_counts)
     class_weight = {}
     for idx,count in enumerate(class_counts.items()):
-        class_weight.update({idx : np.sqrt(max_count / count[1])})
+        class_weight.update({idx : (max_count / count[1])**weight_sensitivity})
 else:
     class_weight = None
 
