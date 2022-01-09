@@ -163,6 +163,11 @@ history = cnn.Train(
 
 print('Evaluate model') ## ----
 
+# load model for best epoch
+best_epoch = 5  # use None to get latest epoch
+my_cnn,epoch = cnn.Load(ckpt_dir, epoch=best_epoch)
+print(' at epoch {:d}'.format(epoch))
+
 # predict classes for all dataset
 pred = cnn.Predict(
     model=my_cnn,
