@@ -16,6 +16,7 @@ from sklearn import metrics
 
 import dataset            # custom data generator
 import cnn                # custom functions for CNN generation
+import biol_metrics       # custom functions model evaluation
 
 
 
@@ -180,7 +181,9 @@ pred = cnn.Predict(
 df['predicted_label'] = pred
 df.to_csv('io/predictions.csv')
 # metrics.confusion_matrix(y_true=df.label, y_pred=df.predicted_label)
-print(metrics.classification_report(y_true=df.label, y_pred=df.predicted_label))
+biol_metrics.classification_report(y_true=df.label, y_pred=df.predicted_label,
+  non_biol_classes = ['badfocus<artefact', 'bubble', 'detritus', 'fiber<detritus'])
+
 
 print('Save model') ## ----
 
