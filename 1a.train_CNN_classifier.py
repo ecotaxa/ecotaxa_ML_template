@@ -81,11 +81,11 @@ classes = class_counts.index.to_list()
 # i.e. a dict with format { class number : class weight }
 if use_class_weight:
     max_count = np.max(class_counts)
-    class_weight = {}
+    class_weights = {}
     for idx,count in enumerate(class_counts.items()):
-        class_weight.update({idx : (max_count / count[1])**weight_sensitivity})
+        class_weights.update({idx : (max_count / count[1])**weight_sensitivity})
 else:
-    class_weight = None
+    class_weights = None
 
 # define numnber of  classes to train on
 nb_of_classes = len(classes)
@@ -160,6 +160,7 @@ history = cnn.Train(
     epochs=epochs,
     initial_epoch=initial_epoch,
     class_weight=class_weight,
+    class_weight=class_weights,
     output_dir=ckpt_dir,
     workers=workers
 )
