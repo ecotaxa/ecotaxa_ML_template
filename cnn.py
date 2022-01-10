@@ -6,6 +6,7 @@
 import os
 
 import numpy as np
+import pandas as pd
 
 import tensorflow as tf
 from tensorflow.keras import utils, layers, optimizers, losses, callbacks
@@ -175,8 +176,8 @@ def Load(output_dir='.', epoch=None):
 
 
 def Train(
-    model, train_batches, valid_batches,
-    epochs, initial_epoch=0, class_weight=None, output_dir='.', workers=1
+    model, train_batches, valid_batches, epochs, initial_epoch=0,
+    log_frequency=1, class_weight=None, output_dir='.', workers=1
 ):
     """
     Trains a CNN model.
@@ -186,6 +187,7 @@ def Train(
         train_batches (dataset.EcoTaxaGenerator): batches of data for training
         valid_batches (dataset.EcoTaxaGenerator): batches of data for validation
         epochs (int): number of epochs to train for
+        log_frequency (int): number of times to log performance metrics per epoch
         class_weight (dict): weights for classes
         output_dir (str): directory where to save model weights
 
@@ -194,7 +196,7 @@ def Train(
         the traning and validation dataset.
     """
 
-    # Set callback to save model weights along training
+    # Set callback to save model weights after each epoch
     checkpoint_path = os.path.join(output_dir, 'checkpoint.{epoch:03d}.h5')
     # NB: hdf5 is necessary to save the model *and* the optimizer state
     checkpoint_callback = callbacks.ModelCheckpoint(
@@ -207,38 +209,92 @@ def Train(
         verbose=1
     )
     
-    # Set callback to save the learning rate value
-    class LearningRateLogger(callbacks.Callback):
-        def __init__(self):
+    # Set callback to save information at a given frequency during training
+    class PeriodicBatchLogger(callbacks.Callback):
+        def __init__(self, frequency, validation_data, filename, workers):
             super().__init__()
             self._supports_tf_logs = True
-            
-        # get learning rate value at the end of each epoch
-        # (with the rest of the stats)
-        def on_epoch_end(self, epoch, logs=None):
-            if logs is None or 'learning_rate' in logs:
-                return
-            # get the optimizer
-            optim = self.model.optimizer
-            # get the current value of the learning rate
-            # - either as a variable (when it is fixed)
-            # - or computed from the current number of iterations
-            if isinstance(optim.lr, tf.Variable):
-                lr_value = optim.lr.numpy()
-            else:
-                lr_value = optim.lr(optim.iterations).numpy()
-            logs['learning_rate'] = lr_value
+            self.frequency = frequency
+            self.validation_data = validation_data
+            self.filename = filename
+            self.workers = workers
+            self.epoch = 0
+        
+        def on_epoch_begin(self, epoch, logs={}):
+            # log epoch number, for later
+            self.epoch = epoch
 
-    # Set callback to log the stats to a .tsv file
-    tsv_path = os.path.join(output_dir, 'training_log.tsv')
-    tsv_logger = callbacks.CSVLogger(filename=tsv_path, separator='\t',
-                                     append=os.path.isfile(tsv_path))
-    
+        def on_train_batch_end(self, batch, logs={}):
+            # compute logging periodicity
+            log_period = max([int(self.params['steps'] / self.frequency), 1])
+            
+            # reindex batch starting at 1
+            batch = batch+1
+            # NB: we use batch+1 since batch numbers start at 0 while they are 
+            #     displayed starting at 1. Also, when frequency=1,
+            #     period = params.steps and this is never reached if batch is
+            #     not switched to 1-based indexing
+
+            if (batch % log_period == 0):
+                # check that logs exist
+                if logs is None:
+                    return
+                
+                # get current learning rate
+                optim = self.model.optimizer
+                # either as a variable (when it is fixed)
+                if isinstance(optim.lr, tf.Variable):
+                    lr_value = optim.lr.numpy()
+                # or computed from the current number of iterations
+                else:
+                    lr_value = optim.lr(optim.iterations).numpy()
+                
+                # log model state
+                log = {
+                    # log training "situation"
+                    'epoch' : self.epoch+1, # switch to 1-based indexing too here
+                    'batch' : batch,
+                    'step' : self.epoch*self.params['steps'] + batch,
+                    'learning_rate' : lr_value,
+                    # convert the stats on the training set to numbers
+                    'train_loss' : logs['loss'].numpy(),
+                    'train_accuracy' : logs['accuracy'].numpy()
+                }
+                
+                # evaluate model
+                val_stats = self.model.evaluate(self.validation_data,
+                                return_dict=True, verbose=0, workers=self.workers)
+                val_stats = {'val_'+k:v for k,v in val_stats.items()}
+
+                # add validation stats
+                log = dict(**log, **val_stats)
+                
+                # log to .tsv file
+                log_df = pd.DataFrame(log, index=[0])
+                if (self.epoch == 0 and batch == log_period):
+                    # we're at the begining of training
+                    # => write file to new directory, with header
+                    os.makedirs(os.path.dirname(self.filename), exist_ok=True)
+                    log_df.to_csv(self.filename, sep='\t', index=False)
+                else:
+                    # append
+                    log_df.to_csv(self.filename, sep='\t', index=False,
+                        mode='a', header=False)
+                
+                # display validation stats
+                print(' - val_loss: {:.4f} - val_accuracy: {:.4f}'.format(
+                      val_stats['val_loss'], val_stats['val_accuracy']))
+
+    log_path = os.path.join(output_dir, 'training_log.tsv')
+    periodic_logger_callback = PeriodicBatchLogger(frequency=log_frequency,
+                                   validation_data=valid_batches,
+                                   filename=log_path, workers=workers)
+
     # Fit the model
     history = model.fit(
         x=train_batches,
         epochs=epochs,
-        callbacks=[checkpoint_callback, LearningRateLogger(), tsv_logger],
+        callbacks=[checkpoint_callback, periodic_logger_callback],
         initial_epoch=initial_epoch,
         validation_data=valid_batches,
         class_weight=class_weight,
