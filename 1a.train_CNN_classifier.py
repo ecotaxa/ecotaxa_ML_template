@@ -14,10 +14,13 @@ import numpy as np
 import tensorflow as tf
 from sklearn import metrics
 
+from importlib import reload
 import dataset            # custom data generator
 import cnn                # custom functions for CNN generation
 import biol_metrics       # custom functions model evaluation
-
+dataset = reload(dataset)
+cnn = reload(cnn)
+biol_metrics = reload(biol_metrics)
 
 
 print('Set options') ## ----
