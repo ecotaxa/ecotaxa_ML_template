@@ -159,7 +159,6 @@ history = cnn.Train(
     valid_batches=val_batches,
     epochs=epochs,
     initial_epoch=initial_epoch,
-    class_weight=class_weight,
     log_frequency=1,
     class_weight=class_weights,
     output_dir=ckpt_dir,
