@@ -104,7 +104,7 @@ val_batches = dataset.EcoTaxaGenerator(
     labels=df_val['label'].values, classes=classes,
     batch_size=batch_size, augment=False, shuffle=False,
     crop=[0,0,bottom_crop,0])
-# NB: do not suffle or augment data for validation, it is useless
+# NB: do not shuffle or augment data for validation, it is useless
 
 total_batches = dataset.EcoTaxaGenerator(
     images_paths=df['img_path'].values,
