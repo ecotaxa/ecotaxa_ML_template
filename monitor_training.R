@@ -14,7 +14,7 @@ dm <- d %>%
   pivot_longer(cols=c(starts_with("train"), starts_with("val"))) %>%
   separate(name, into=c("dataset", "metric"), sep="_") %>%
   pivot_wider(names_from=metric, values_from=value)
-de <- filter(d, batch == min(batch))
+de <- filter(d, batch == max(batch))
 
 # define plots
 base <- ggplot() + geom_vline(aes(xintercept=step), data=de, colour="grey80") + theme(legend.position="top")
