@@ -65,9 +65,9 @@ df = pd.read_csv('io/training_labels.csv', index_col='id')
 
 # extract a validation set to monitor performance while training
 seed = 1
-# 75% in train
+# 90% in train
 df_train = df.groupby('label').sample(frac=0.9, random_state=seed)
-# the remaining 15% in val
+# the remaining 10% in val
 df_val   = df.loc[set(df.index) - set(df_train.index)]
 
 # count nb of examples per class in the training set
