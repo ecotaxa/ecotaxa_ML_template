@@ -186,7 +186,8 @@ df['predicted_label'] = pred
 df.to_csv('io/cnn_predictions.csv')
 # metrics.confusion_matrix(y_true=df.label, y_pred=df.predicted_label)
 cr = biol_metrics.classification_report(y_true=df.label, y_pred=df.predicted_label,
-  non_biol_classes = ['badfocus<artefact', 'bubble', 'detritus', 'fiber<detritus'])
+  non_biol_classes = ['badfocus<artefact', 'bubble', 'detritus', 'fiber<detritus',
+  'crystal', 'artefact', 'reflection', 'cloud'])
 print(cr)
 cr.to_csv('io/cnn_classification_report.csv')
 
