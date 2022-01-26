@@ -26,7 +26,7 @@ with open('io/crop.txt') as f:  # number of pixels to crop at the bottom
 
 print('Load feature extractor') ## ----
 
-my_fe = tf.keras.models.load_model('io/feature_extractor')
+my_fe = tf.keras.models.load_model('io/feature_extractor', compile=False)
 
 # get model input shape
 input_shape = my_fe.layers[0].input_shape

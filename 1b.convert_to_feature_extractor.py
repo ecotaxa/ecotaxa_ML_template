@@ -14,7 +14,7 @@ import tensorflow_hub as hub
 import cnn                # custom functions for CNN generation
 
 # read model weights
-my_cnn = tf.keras.models.load_model('io/cnn_model')
+my_cnn = tf.keras.models.load_model('io/cnn_model', compile=False)
 
 # drop the Dense and Dropout layers to get only the feature extractor
 my_fe = tf.keras.models.Sequential(
