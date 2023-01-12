@@ -68,7 +68,7 @@ seed = 1
 # 90% in train
 df_train = df.groupby('label').sample(frac=0.9, random_state=seed)
 # the remaining 10% in val
-df_val   = df.loc[set(df.index) - set(df_train.index)]
+df_val   = df.loc[list(set(df.index) - set(df_train.index))]
 
 # count nb of examples per class in the training set
 class_counts = df_train.groupby('label').size()
