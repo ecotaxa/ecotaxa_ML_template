@@ -229,7 +229,7 @@ def Train(
             log_period = max([int(self.params['steps'] / self.frequency), 1])
             
             # reindex batch starting at 1
-            batch = batch+1
+            batch += 1
             # NB: we use batch+1 since batch numbers start at 0 while they are 
             #     displayed starting at 1. Also, when frequency=1,
             #     period = params.steps and this is never reached if batch is
