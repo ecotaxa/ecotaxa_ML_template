@@ -6,9 +6,10 @@
 library("tidyverse")
 library("patchwork")
 
+io <- "io/"
+
 # read training log
-input <- "io/checkpoints/training_log.tsv"
-d <- read_tsv(input, col_types = cols())
+d <- read_tsv(str_c(io, "/checkpoints/training_log.tsv"), col_types = cols())
 dm <- d %>%
   # reformat to get losses and accuracies in the same column
   pivot_longer(cols=c(starts_with("train"), starts_with("val"))) %>%
