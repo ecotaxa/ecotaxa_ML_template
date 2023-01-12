@@ -69,6 +69,7 @@ seed = 1
 df_train = df.groupby('label').sample(frac=0.95, random_state=seed)
 # the rest in val
 df_val   = df.loc[list(set(df.index) - set(df_train.index))]
+df_test = pd.read_csv('io/unknown_labels.csv', index_col='id')
 
 # count nb of examples per class in the training set
 class_counts = df_train.groupby('label').size()
@@ -106,8 +107,8 @@ val_batches = dataset.EcoTaxaGenerator(
     crop=[0,0,bottom_crop,0])
 # NB: do not shuffle or augment data for validation, it is useless
 
-total_batches = dataset.EcoTaxaGenerator(
-    images_paths=df['img_path'].values,
+test_batches = dataset.EcoTaxaGenerator(
+    images_paths=df_test['img_path'].values,
     input_shape=input_shape,
     labels=None, classes=None,
     batch_size=batch_size, augment=False, shuffle=False,
@@ -173,19 +174,19 @@ best_epoch = None  # use None to get latest epoch
 my_cnn,epoch = cnn.Load(ckpt_dir, epoch=best_epoch)
 print(' at epoch {:d}'.format(epoch))
 
-# predict classes for all dataset
+# predict classes for test dataset
 pred = cnn.Predict(
     model=my_cnn,
-    batches=total_batches,
+    batches=test_batches,
     classes=classes,
     workers=workers
 )
 
 # comput a few scores, just for fun
-df['predicted_label'] = pred
-df.to_csv('io/cnn_predictions.csv')
+df_test['predicted_label'] = pred
+df_test.to_csv('io/cnn_predictions.csv')
 # metrics.confusion_matrix(y_true=df.label, y_pred=df.predicted_label)
-cr = biol_metrics.classification_report(y_true=df.label, y_pred=df.predicted_label,
+cr = biol_metrics.classification_report(y_true=df_test.label, y_pred=df_test.predicted_label,
   non_biol_classes = ['badfocus<artefact', 'bubble', 'detritus', 'fiber<detritus',
   'crystal', 'artefact', 'reflection', 'cloud'])
 print(cr)
