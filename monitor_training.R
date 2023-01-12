@@ -24,3 +24,15 @@ p_lr <- base + geom_path(aes(x=step, y=learning_rate), data=d)
 
 # plot in a nice grid
 (p_loss + p_accu) / p_lr + plot_layout(heights=c(2.5,1))
+
+
+## Plot training stats ----
+
+source("lib_ml_utils.R")
+p <- read_csv(str_c(io, "/cnn_predictions.csv"), col_types=cols()) %>% rename(true=label, pred=predicted_label)
+plot(cm(p$true, p$pred))
+ggsave(str_c(io, "/cnn_confusion_matrix.png"), width=8, height=8)
+crp <- plot(classification_report(p$true, p$pred, exclude=c("artefact", "crystal", "detritus", "fiber", "other<living")))
+crp
+gtsave(crp, str_c(io, "/cnn_classification_report.html"))
+
