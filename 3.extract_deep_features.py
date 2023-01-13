@@ -36,7 +36,7 @@ with open('io/dim_reducer.pickle','rb') as pca_file:
 
 print('Load data and extract features') ## ----
 
-for source in ['training', 'unknown']:
+for source in ['training', 'validation', 'test']:
     # read DataFrame with image ids, paths and labels
     # NB: those would be in the database in EcoTaxa
     df = pd.read_csv('io/'+source+'_labels.csv', index_col='id')

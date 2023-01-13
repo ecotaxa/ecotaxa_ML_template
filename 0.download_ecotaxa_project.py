@@ -100,4 +100,3 @@ train_df,test_df = train_test_split(dfg, test_size=0.1, stratify=dfg['label'], r
 
 # save to disk
 train_df.to_csv('io/training_labels.csv', index=False)
-test_df.to_csv('io/unknown_labels.csv', index=False)

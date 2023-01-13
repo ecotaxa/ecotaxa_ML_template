@@ -61,15 +61,35 @@ print('Prepare datasets') ## ----
 
 # read DataFrame with image ids, paths and labels
 # NB: those would be in the database in EcoTaxa
-df = pd.read_csv('io/training_labels.csv', index_col='id')
 
-# extract a validation set to monitor performance while training
-seed = 1
-# 95% in train
-df_train = df.groupby('label').sample(frac=0.95, random_state=seed)
-# the rest in val
-df_val   = df.loc[list(set(df.index) - set(df_train.index))]
-df_test = pd.read_csv('io/unknown_labels.csv', index_col='id')
+# training set
+df_train = pd.read_csv('io/training_labels.csv', index_col='id')
+
+# validation set if it exists or get it from the training set
+if os.path.exists('io/validation_labels.csv') :
+    df_valid = pd.read_csv('io/validation_labels.csv', index_col='id')
+else :
+    df = df_train
+    seed = 1
+    # 95% in train
+    df_train = df.groupby('label').sample(frac=0.95, random_state=seed)
+    # the rest in val
+    df_valid   = df.loc[list(set(df.index) - set(df_train.index))]
+    # save them for later
+    df_train.to_csv('io/training_labels.csv')
+    df_valid.to_csv('io/validation_labels.csv')
+
+# same for the test set
+if os.path.exists('io/test_labels.csv'):
+    df_test = pd.read_csv('io/test_labels.csv', index_col='id')
+else 
+    df = df_train
+    seed = 1
+    df_train = df.groupby('label').sample(frac=0.95, random_state=seed)
+    df_test   = df.loc[list(set(df.index) - set(df_train.index))]
+    # save them for later
+    df_train.to_csv('io/training_labels.csv')
+    df_test.to_csv('io/test_labels.csv')
 
 # count nb of examples per class in the training set
 class_counts = df_train.groupby('label').size()
@@ -99,10 +119,10 @@ train_batches = dataset.EcoTaxaGenerator(
     batch_size=batch_size, augment=augment, shuffle=True,
     crop=[0,0,bottom_crop,0])
 
-val_batches = dataset.EcoTaxaGenerator(
-    images_paths=df_val['img_path'].values,
+valid_batches = dataset.EcoTaxaGenerator(
+    images_paths=df_valid['img_path'].values,
     input_shape=input_shape,
-    labels=df_val['label'].values, classes=classes,
+    labels=df_valid['label'].values, classes=classes,
     batch_size=batch_size, augment=False, shuffle=False,
     crop=[0,0,bottom_crop,0])
 # NB: do not shuffle or augment data for validation, it is useless
@@ -110,6 +130,7 @@ val_batches = dataset.EcoTaxaGenerator(
 test_batches = dataset.EcoTaxaGenerator(
     images_paths=df_test['img_path'].values,
     input_shape=input_shape,
+    # NB: although the labels are in the file, we don't use them here
     labels=None, classes=None,
     batch_size=batch_size, augment=False, shuffle=False,
     crop=[0,0,bottom_crop,0])
@@ -157,7 +178,7 @@ print('Train model') ## ----
 history = cnn.Train(
     model=my_cnn,
     train_batches=train_batches,
-    valid_batches=val_batches,
+    valid_batches=valid_batches,
     epochs=epochs,
     initial_epoch=initial_epoch,
     log_frequency=1,
@@ -174,7 +195,7 @@ best_epoch = None  # use None to get latest epoch
 my_cnn,epoch = cnn.Load(ckpt_dir, epoch=best_epoch)
 print(' at epoch {:d}'.format(epoch))
 
-# predict classes for test dataset
+# predict labels for test dataset
 pred = cnn.Predict(
     model=my_cnn,
     batches=test_batches,

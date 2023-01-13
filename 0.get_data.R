@@ -18,7 +18,7 @@ set.seed(1)
 subset <- d %>%
   filter(label %in% dominant$label) %>%
   group_by(label) %>% sample_n(100, replace=FALSE) %>%
-  mutate(set=c(rep("training", 80), rep("unknown", 20))) %>%
+  mutate(set=c(rep("training", 80), rep("test", 20))) %>%
   ungroup() %>%
   mutate(
     id=1:n(),
