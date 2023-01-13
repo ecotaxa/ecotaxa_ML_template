@@ -300,6 +300,9 @@ def Train(
         class_weight=class_weight,
         max_queue_size=max(10, workers*2),
         workers=workers
+        # TODO use max_queue_size only, workers seems to only be for multiprocessoer
+        # https://stackoverflow.com/questions/55531427/how-to-define-max-queue-size-workers-and-use-multiprocessing-in-keras-fit-gener
+        
     )
 
     return history
