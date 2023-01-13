@@ -202,7 +202,7 @@ def Train(
     checkpoint_callback = callbacks.ModelCheckpoint(
         filepath=checkpoint_path,
         monitor='val_loss',
-        save_best_only=True,
+        save_best_only=False,
         mode='min',
         save_weights_only=False,
         save_freq='epoch',
