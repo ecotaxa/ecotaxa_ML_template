@@ -36,6 +36,7 @@ import pandas as pd
 import urllib.request
 from tqdm import tqdm
 from sklearn.model_selection import train_test_split
+import shutil
 
 import ecotaxa_py_client
 from ecotaxa_py_client.api import authentification_api
@@ -74,12 +75,22 @@ df['img_path'] = [os.path.join(img_dir, str(this_id)+'.png') for this_id in df['
 # TODO: detect extension of original image
 
 # download images (with a nice progress bar)
+vault_path = '/remote/ecotaxa/vault'
 for i in tqdm(range(df.shape[0])):
+  # if the file has not been copied already
   if not os.path.isfile(df['img_path'][i]):
-    res = urllib.request.urlretrieve(
-      url='https://ecotaxa.obs-vlfr.fr/vault/'+df['img.file_name'][i],
-      filename=df['img_path'][i]
-    )
+    # copy from vault
+    if os.path.isdir(vault_path):
+      res = shutil.copyfile(
+        src=os.path.join(vault_path, df['img.file_name'][i]),
+        dst=df['img_path'][i]
+      )
+    # or copy through the internet
+    else:
+      res = urllib.request.urlretrieve(
+        url='https://ecotaxa.obs-vlfr.fr/vault/'+df['img.file_name'][i],
+        filename=df['img_path'][i]
+      )
 
 # read taxonomic grouping
 groups = pd.read_csv(grouping_url, index_col='level0')
