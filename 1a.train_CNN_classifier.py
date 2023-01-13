@@ -213,9 +213,24 @@ cr = biol_metrics.classification_report(y_true=df_test.label, y_pred=df_test.pre
 print(cr)
 cr.to_csv('io/cnn_classification_report.csv')
 
-print('Save model') ## ----
+
+print('Save full model') ## ----
 
 # save model
 my_cnn.save('io/cnn_model', include_optimizer=False)
 # NB: do not include the optimizer state: (i) we don't need to retrain this final
 #     model, (ii) it does not work with the native TF format anyhow.
+
+
+print('Create feature extractor model') ## ----
+
+# drop the Dense and Dropout layers to get only the feature extractor
+my_fe = tf.keras.models.Sequential(
+    [layer for layer in my_cnn.layers
+     if not (isinstance(layer, tf.keras.layers.Dense) |
+             isinstance(layer, tf.keras.layers.Dropout))
+    ])
+my_fe.summary()
+
+# save feature extractor
+my_fe.save('io/feature_extractor')
