@@ -80,9 +80,9 @@ else :
     df_valid.to_csv('io/validation_labels.csv')
 
 # same for the test set
-if os.path.exists('io/test_labels.csv'):
+if os.path.exists('io/test_labels.csv') :
     df_test = pd.read_csv('io/test_labels.csv', index_col='id')
-else 
+else :
     df = df_train
     seed = 1
     df_train = df.groupby('label').sample(frac=0.95, random_state=seed)
