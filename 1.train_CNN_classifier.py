@@ -48,10 +48,10 @@ classif_layer_dropout = 0.2
 
 # CNN training (see cnn.Train)
 use_class_weight = True
-weight_sensitivity = 0.25  # 0.5 = sqrt
+weight_sensitivity = 0.5  # 0.5 = sqrt
 lr_method = 'decay'
 initial_lr = 0.0005
-decay_rate = 0.97
+decay_rate = 0.097  # the lr is decreased following lr / (1 + decay_rate) per epoch.
 loss = 'cce'
 epochs = 2
 workers = 10
