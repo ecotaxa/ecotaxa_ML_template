@@ -8,6 +8,9 @@
 import tensorflow_tricks  # settings for tensorflow to behave nicely
 
 import os
+# prevent HDF file locking to be able to write on complex
+# needed to save checkpoints on NFS mounted drive (at least)
+os.system("export HDF5_USE_FILE_LOCKING='FALSE'")
 
 import pandas as pd
 import numpy as np
