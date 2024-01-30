@@ -8,4 +8,5 @@ test_io/*.hdf5
 test_io/checkpoints
 test_io/feature_extractor
 *.pyc
+old/*
 
