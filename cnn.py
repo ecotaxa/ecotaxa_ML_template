@@ -109,13 +109,13 @@ def Compile(
 
     # Define loss
     if loss == 'cce':
-        loss = losses.CategoricalCrossentropy(from_logits=True,
+        loss = losses.CategoricalCrossentropy(from_logits=False,
                    reduction=losses.Reduction.SUM_OVER_BATCH_SIZE)
         # TODO consider using
         # https://www.tensorflow.org/api_docs/python/tf/keras/losses/SparseCategoricalCrossentropy
         # to avoid having to one-hot encode the labels
     elif loss == 'sfce':
-        loss = tfa.losses.SigmoidFocalCrossEntropy(from_logits=True,
+        loss = tfa.losses.SigmoidFocalCrossEntropy(from_logits=False,
                    reduction=losses.Reduction.SUM_OVER_BATCH_SIZE)
 
     # Compile model
