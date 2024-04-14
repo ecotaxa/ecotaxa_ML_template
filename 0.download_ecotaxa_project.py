@@ -46,12 +46,14 @@ from ecotaxa_py_client.model.project_filters import ProjectFilters
 
 # authenticate
 
+print("Log in EcoTaxa")
 with ecotaxa_py_client.ApiClient() as client:
     api = authentification_api.AuthentificationApi(client)
     token = api.login(LoginReq(username=ecotaxa_user, password=ecotaxa_pass))
 
 config = ecotaxa_py_client.Configuration(access_token=token, discard_unknown_keys=True)
 
+print("Get data from project(s)")
 # get validated objects (and their names + images paths) from a project
 def get_objects_df(ecotaxa_py_client, proj_id):
     with ecotaxa_py_client.ApiClient(config) as client:
@@ -72,6 +74,7 @@ objs = [get_objects_df(ecotaxa_py_client, proj_id) for proj_id in proj_ids]
 # format as a single DataFrame
 df = pd.concat(objs).reset_index()
 
+print("Download images")
 # compute final path for images
 img_dir = os.path.join(os.path.expanduser(data_dir), 'imgs')
 os.makedirs(img_dir, exist_ok=True)
@@ -97,6 +100,7 @@ for i in tqdm(range(df.shape[0])):
         filename=df['img_path'][i]
       )
 
+print("Perform taxonomic regrouping")
 # read taxonomic grouping
 groups = pd.read_csv(grouping_url, index_col='level0')
 groups = groups[['level1', 'level2']]
