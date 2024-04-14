@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 #
-# Download data from an EcoTaxa project to serve as training and test sets
+# Download data from one or several EcoTaxa project(s) to serve as training and test sets
 #
 # (c) 2022 Jean-Olivier Irisson, GNU General Public License v3
 
@@ -11,11 +11,11 @@
 ecotaxa_user = 'ecotaxa.api.user@gmail.com'
 ecotaxa_pass = 'test!'
 
-# numeric id of project to download
+# numeric id(s) of project(s) to download
 # you should have appropriate access rights to it:
 # - either the project should be visible to all
 # - or you should be explicitely registered to it, as viewer at least
-proj_id = 185
+proj_ids = [185]
 
 # path or URL of a taxonomic grouping file
 # should have level0, level1, level2 columns where level0 is the current EcoTaxa
@@ -50,22 +50,27 @@ with ecotaxa_py_client.ApiClient() as client:
     api = authentification_api.AuthentificationApi(client)
     token = api.login(LoginReq(username=ecotaxa_user, password=ecotaxa_pass))
 
-config = ecotaxa_py_client.Configuration(
-  access_token=token, discard_unknown_keys=True)
+config = ecotaxa_py_client.Configuration(access_token=token, discard_unknown_keys=True)
 
-# get validated objects from project
+# get validated objects (and their names + images paths) from a project
+def get_objects_df(ecotaxa_py_client, proj_id):
+    with ecotaxa_py_client.ApiClient(config) as client:
+        objects_instance = objects_api.ObjectsApi(client)
+        # only validated
+        filters = ProjectFilters(statusfilter="V") 
+        # get taxonomic name and image file name
+        fields = 'txo.display_name,img.file_name'
+        # get objects
+        objs = objects_instance.get_object_set(proj_id, project_filters=filters, fields=fields)
+    # format result as DataFrame
+    df = pd.DataFrame(objs['details'], columns=fields.split(','))
+    df['id'] = objs['object_ids']
+    return(df)
 
-with ecotaxa_py_client.ApiClient(config) as client:
-    objects_instance = objects_api.ObjectsApi(client)
-    # only validated
-    filters = ProjectFilters(statusfilter="V") 
-    # get taxonomic name and image file name
-    fields = 'txo.display_name,img.file_name'
-    objs = objects_instance.get_object_set(proj_id, filters, fields=fields)
+objs = [get_objects_df(ecotaxa_py_client, proj_id) for proj_id in proj_ids]
 
-# format retrieved data as a DataFrame
-df = pd.DataFrame(objs['details'], columns=fields.split(','))
-df['id'] = objs['object_ids']
+# format as a single DataFrame
+df = pd.concat(objs).reset_index()
 
 # compute final path for images
 img_dir = os.path.join(os.path.expanduser(data_dir), 'imgs')
