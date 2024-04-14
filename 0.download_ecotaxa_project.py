@@ -35,7 +35,6 @@ import os
 import pandas as pd
 import urllib.request
 from tqdm import tqdm
-from sklearn.model_selection import train_test_split
 import shutil
 
 import ecotaxa_py_client
@@ -115,9 +114,5 @@ dfg = dfg[['id', 'img_path', 'label']]
 # drop images that end up with no taxon name
 dfg = dfg.dropna(subset=['label'])
 
-# split in train-test, stratified by (regrouped) label
-train_df,test_df = train_test_split(dfg, test_size=0.1, stratify=dfg['label'], random_state=1)
-
 # save to disk
-train_df.to_csv('io/training_labels.csv', index=False)
-test_df.to_csv('io/test_labels.csv', index=False)
+dfg.to_csv('io/training_labels.csv', index=False)
