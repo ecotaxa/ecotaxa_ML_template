@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python
 #
 # CLassify images using a trained RandomForest classifier
 #

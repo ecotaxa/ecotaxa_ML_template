@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python
 #
 # Download data from one or several EcoTaxa project(s) to serve as training and test sets
 #

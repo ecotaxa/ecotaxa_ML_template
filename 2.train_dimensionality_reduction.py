@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python
 #
 # Train a PCA to reduce the number of features produced by a deep feature extractor
 #

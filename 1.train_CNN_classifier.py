@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python
 #
 # Train a deep network for plankton image classification
 # NB: this step is done *outside* of EcoTaxa
