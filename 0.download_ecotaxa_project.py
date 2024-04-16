@@ -78,8 +78,8 @@ print("Download images")
 img_dir = os.path.join(os.path.expanduser(data_dir), 'imgs')
 os.makedirs(img_dir, exist_ok=True)
 # name image according to internal object_id to ensure uniqueness
-df['img_path'] = [os.path.join(img_dir, str(this_id)+'.png') for this_id in df['id']]
-# TODO: detect extension of original image
+ext = os.path.splitext(df['img.file_name'][0])[-1].lower()
+df['img_path'] = [os.path.join(img_dir, str(this_id)+ext) for this_id in df['id']]
 
 # download images (with a nice progress bar)
 vault_path = '/remote/ecotaxa/vault'
