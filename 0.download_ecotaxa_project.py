@@ -106,7 +106,7 @@ groups = groups[['level1', 'level2']]
 # add grouping levels
 dfg = df.join(groups, on='txo.display_name')
 # save to disk
-dfg.to_csv(os.path.join(data_dir, 'taxa.csv.gz'))
+dfg.to_csv(os.path.join(data_dir, 'taxa.csv.gz'), index=False)
 
 # choose level
 dfg = dfg.rename(columns={grouping_level: 'label'})
