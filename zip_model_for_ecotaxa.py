@@ -2,6 +2,10 @@
 
 from zipfile import ZipFile
 
+import os
+if os.path.exists('io.zip'):
+   os.remove('io.zip')
+
 import pathlib
 fe1 = [f for f in pathlib.Path('io/feature_extractor/').iterdir() if f.is_file()]
 fe2 = [f for f in pathlib.Path('io/feature_extractor/variables/').iterdir() if f.is_file()]
