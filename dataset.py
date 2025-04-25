@@ -7,7 +7,7 @@ import os
 
 import numpy as np
 
-import lycon                          # image loading, manipulation
+import cv2                            # image loading, manipulation
 from imgaug import augmenters as iaa  # image manipulation
 
 from sklearn.preprocessing import MultiLabelBinarizer # one-hot encoder
@@ -128,7 +128,7 @@ class EcoTaxaGenerator(utils.Sequence):
 
         # select and load images from this batch
         batch_paths = [self.images_paths[i] for i in indexes]
-        batch_orig_images = [lycon.load(p)/255 for p in batch_paths]
+        batch_orig_images = [cv2.imread(p)/255. for p in batch_paths]
 
         # resize images to the input dimension of the network
         batch_prepared_images = []
@@ -138,7 +138,7 @@ class EcoTaxaGenerator(utils.Sequence):
             [t,r,b,l] = self.crop
             h,w = img.shape[0:2]
             img = img[t:(h-b),l:(w-r),:]
-# TODO crop to object, automatically
+            # TODO crop to object, automatically
 
             h,w = img.shape[0:2]
 
@@ -148,11 +148,10 @@ class EcoTaxaGenerator(utils.Sequence):
             # upscale small images or downscale large ones
             if (self.upscale) or (dim_max > input_size):
                 # resize image so that largest dim is now equal to input_size
-                img = lycon.resize(
+                img = cv2.resize(
                     img,
-                    height = max(h*input_size//dim_max,1),
-                    width  = max(w*input_size//dim_max,1),
-                    interpolation=lycon.Interpolation.AREA
+                    (max(h*input_size//dim_max,1), max(w*input_size//dim_max,1)),
+                    interpolation=cv2.INTER_AREA
                 )
                 h,w = img.shape[0:2]
 
