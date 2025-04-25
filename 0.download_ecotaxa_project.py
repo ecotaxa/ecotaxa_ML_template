@@ -39,9 +39,9 @@ import shutil
 
 import ecotaxa_py_client
 from ecotaxa_py_client.api import authentification_api
-from ecotaxa_py_client.model.login_req import LoginReq
+from ecotaxa_py_client.models.login_req import LoginReq
 from ecotaxa_py_client.api import objects_api
-from ecotaxa_py_client.model.project_filters import ProjectFilters
+from ecotaxa_py_client.models.project_filters import ProjectFilters
 
 # authenticate
 
@@ -50,7 +50,7 @@ with ecotaxa_py_client.ApiClient() as client:
     api = authentification_api.AuthentificationApi(client)
     token = api.login(LoginReq(username=ecotaxa_user, password=ecotaxa_pass))
 
-config = ecotaxa_py_client.Configuration(access_token=token, discard_unknown_keys=True)
+config = ecotaxa_py_client.Configuration(access_token=token)
 
 print("Get data from project(s)")
 # get validated objects (and their names + images paths) from a project
@@ -64,8 +64,9 @@ def get_objects_df(ecotaxa_py_client, proj_id):
         # get objects
         objs = objects_instance.get_object_set(proj_id, project_filters=filters, fields=fields)
     # format result as DataFrame
-    df = pd.DataFrame(objs['details'], columns=fields.split(','))
-    df['id'] = objs['object_ids']
+    objs_d = objs.to_dict()
+    df = pd.DataFrame(objs_d['details'], columns=fields.split(','))
+    df['id'] = objs_d['object_ids']
     return(df)
 
 objs = [get_objects_df(ecotaxa_py_client, proj_id) for proj_id in proj_ids]
