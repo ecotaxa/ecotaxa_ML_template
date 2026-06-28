@@ -18,6 +18,7 @@ ecotaxa_pass = 'test!'
 proj_ids = [185]
 
 # path or URL of a taxonomic grouping file
+# NB: use the URL with export?format=csv instead of edit?
 # should have level0, level1, level2 columns where level0 is the current EcoTaxa
 # classif and level1 and 2 are increasingly coarse groupings
 grouping_url = 'https://docs.google.com/spreadsheets/d/1Rn73hMWGI3N-WzqlRX2X1H1aa94OLZGZIppzhQnOj-8/export?format=csv'
