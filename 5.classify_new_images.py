@@ -46,3 +46,8 @@ df = pd.read_csv('io/test_labels.csv', index_col='id')
 from sklearn import metrics
 metrics.accuracy_score(y_true=df.label, y_pred=predicted_labels)
 metrics.log_loss(y_true=df.label, y_pred=probs)
+cr = biol_metrics.classification_report(y_true=df.label, y_pred=predicted_labels,
+  non_biol_classes = ['badfocus<artefact', 'bubble', 'detritus', 'fiber<detritus',
+  'crystal', 'artefact', 'reflection', 'cloud'])
+print(cr)
+cr.to_csv('io/rf_classification_report.tsv', sep='\t')
