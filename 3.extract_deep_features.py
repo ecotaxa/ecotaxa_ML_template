@@ -17,7 +17,7 @@ import dataset   # custom data generator
 
 print('Set options') ## ----
 
-batch_size = 16  # size of images batches in GPU memory
+batch_size = 128  # size of images batches in GPU memory
 workers = 10     # number of parallel threads to prepare batches
 with open('io/crop.txt') as f:
     bottom_crop = int(f.read())

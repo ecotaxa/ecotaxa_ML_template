@@ -34,7 +34,7 @@ ckpt_dir = 'io/checkpoints'
 os.makedirs(ckpt_dir, exist_ok=True)
 
 # Data generator (see dataset.EcoTaxaGenerator)
-batch_size = 16
+batch_size = 256
 augment = True
 upscale = True
 with open('io/crop.txt') as f:
