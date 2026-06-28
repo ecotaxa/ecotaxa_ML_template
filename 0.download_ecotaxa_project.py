@@ -90,8 +90,11 @@ for i in tqdm(range(df.shape[0])):
   if not os.path.isfile(df['img_path'][i]):
     # copy from vault
     if os.path.isdir(vault_path):
+      img_path = os.path.join(vault_path, df['img.file_name'][i])
+      if not os.path.isfile(img_path):
+        img_path = os.path.join(vault_path + '2', df['img.file_name'][i])
       res = shutil.copyfile(
-        src=os.path.join(vault_path, df['img.file_name'][i]),
+        src=img_path,
         dst=df['img_path'][i]
       )
     # or copy through the internet
